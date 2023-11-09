@@ -2,7 +2,9 @@ var express = require('express');
 var router = express.Router();
 const crypto = require("crypto");
 const algorithm = "aes-256-cbc"; 
-const User = require('../models/user')
+const User = require('../models/user');
+const Token = require('../models/token');
+
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
@@ -24,24 +26,20 @@ router.post('/create_account', async function(req, res, next) {
   const user = await User.create(req.body)
 });
 
-router.get('/forget_password', function(req, res, next) {
+router.get('/forget_password', async function(req, res, next) {
   const errors = validationResult(req);
   const { email } = req.body;
 
-  User.findOne({ email }, (err, user) => {
-    if (!errors.isEmpty()) {
-      return res.status(422).json({
-        error: errors.array()[0].msg,
-      });
-    }
-
-    if (err || !user) {
+  const user = await User.findOne({ email }) 
+    if (!user) {
       return res.status(400).json({
-        error: "Aucun utilisateur avec cet E-mail n'a été trouvé dans la BDD",
+        success : false,
+        msg: "Aucun utilisateur avec cet E-mail n'a été trouvé dans la BDD",
       });
     }
 
     const token = crypto.randomBytes(64).toString('hex'); 
+    await Token.create({token})
     var currentDate = new Date();
     const url = `http://localhost:3000/resetpassword/${token}`;
     console.log({ url });
@@ -54,30 +52,7 @@ router.get('/forget_password', function(req, res, next) {
         ${url}
         `,
     };
-
-    return user.updateOne({ resetLink: token }, (err, success) => {
-      if (err) {
-        return res.status(400).json({
-          error: "Erreur dans le lien de réinitialisation",
-        });
-      } else {
-        mg.messages().send(data, function (error, body) {
-          console.log("L'E-mail a été envoyé avec succès");
-          if (error) {
-            res.json({
-              error: error.message,
-            });
-          }
-          return res.json({
-            message:
-              "L'E-mail a été envoyé, veuillez suivre les instructions",
-            url: { url },
-          });
-        });
-      }
-    });
-  });
-  // res.json({email: 'yasssine@mail.com' ,token: '15d4fsdf4ffsf'})
+    res.json({success:true,token})
 });
 
 router.get('/reset_password', function(req, res, next) {
