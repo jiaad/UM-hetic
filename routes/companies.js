@@ -8,11 +8,5 @@ router.post('/login', companyCntrl.login);
 router.get('/logout/:id', companyCntrl.logout);
 router.put('/:id', companyCntrl.update);
 router.delete('/:id', companyCntrl.delete);
-router.get('/token',(req,res,next)=>{
-    res.json(
-        {token:req.headers.authorization}
-    )
-})
-
 
 module.exports = router;

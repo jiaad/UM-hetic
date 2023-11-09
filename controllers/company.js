@@ -75,7 +75,10 @@ exports.logout = (req, res, next) => {
             if (!company) {
                 return res.json({ success:false,message: 'Compagnie inexistante'});
             }
-            
+            // Si le token était stocké dans la BD, on pourait le supprimer mais là; apparemment aucune action puisque tout sera géré sur le front.
+
+
+            // A revoir.........
 
         })
     } else {
@@ -128,7 +131,7 @@ exports.delete = (req, res, next) => {
         })
     } else {
         res.json({
-            success:false,message:"Identifiants non reconnus"
+            success:false,message:"Identifiant invalide"
         })
     }
 }
