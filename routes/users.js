@@ -37,7 +37,7 @@ router.get('/forget_password', function(req, res, next) {
 
     if (err || !user) {
       return res.status(400).json({
-        error: "User with this email was not found in DB",
+        error: "Aucun utilisateur avec cet E-mail n'a été trouvé dans la BDD",
       });
     }
 
@@ -48,9 +48,9 @@ router.get('/forget_password', function(req, res, next) {
     const data = {
       from: "me@samples.mailgun.org",
       to: email,
-      subject: "password reset",
-      html: ` <p>Hey we have received request for reset your account password </p>
-        <h3> <a href="http://localhost:3000/resetpassword/${token}">click here</a></h3>
+      subject: "Réinitialisation de mot de passe",
+      html: ` <p>Bonjour, nous avoins reçu une demande de réinitialisation de mot de passe de votre part. </p>
+        <h3> <a href="http://localhost:3000/resetpassword/${token}">Cliquez ici</a></h3>
         ${url}
         `,
     };
@@ -58,11 +58,11 @@ router.get('/forget_password', function(req, res, next) {
     return user.updateOne({ resetLink: token }, (err, success) => {
       if (err) {
         return res.status(400).json({
-          error: "reset password link error",
+          error: "Erreur dans le lien de réinitialisation",
         });
       } else {
         mg.messages().send(data, function (error, body) {
-          console.log("mail send to user successfully");
+          console.log("L'E-mail a été envoyé avec succès");
           if (error) {
             res.json({
               error: error.message,
@@ -70,7 +70,7 @@ router.get('/forget_password', function(req, res, next) {
           }
           return res.json({
             message:
-              "Email has been send successfully kindly follow the instructions",
+              "L'E-mail a été envoyé, veuillez suivre les instructions",
             url: { url },
           });
         });
