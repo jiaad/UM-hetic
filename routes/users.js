@@ -47,8 +47,8 @@ router.post('/create_account', async function(req, res, next) {
   return res.json({ success: true, data: user})
 });
 
-router.get('/forget_password', async function(req, res, next) {
-  const errors = validationResult(req);
+router.post('/forget_password', async function(req, res, next) {
+  // const errors = validationResult(req);
   const { email } = req.body;
 
   const user = await User.findOne({ email }) 
@@ -60,24 +60,38 @@ router.get('/forget_password', async function(req, res, next) {
     }
 
     const token = crypto.randomBytes(64).toString('hex'); 
-    await Token.create({token})
+    const original_token = await Token.create({token, user})
     var currentDate = new Date();
-    const url = `http://localhost:3000/resetpassword/${token}`;
+    const url = `http://localhost:3000/resetpassword/${original_token._id}`;
     console.log({ url });
     const data = {
       from: "me@samples.mailgun.org",
       to: email,
       subject: "Réinitialisation de mot de passe",
       html: ` <p>Bonjour, nous avoins reçu une demande de réinitialisation de mot de passe de votre part. </p>
-        <h3> <a href="http://localhost:3000/resetpassword/${token}">Cliquez ici</a></h3>
+        <h3> <a href="http://localhost:3000/resetpassword/${original_token._id}">Cliquez ici</a></h3>
         ${url}
         `,
     };
-    res.json({success:true,token})
+    res.json({success:true,token, data})
 });
 
-router.get('/reset_password', function(req, res, next) {
-  res.json({email: 'yasssine@mail.com' ,token: '15d4fsdf4ffsf'})
+router.post('/reset_password/:token',async function(req, res, next) {
+  const { password } = req.body
+  if(!password){
+    return res.json({success: false, msg: `Remplir tout les champs`})
+  }
+  const hash_new_password = await hashPassword(password, 10)
+  const token = await Token.findById (req.params.token)
+  if (token == undefined) {
+    return res.json({success: false, msg: `token invalide`})
+  }
+
+  const user = await User.findById (token.user)
+  user.password = hash_new_password
+  await user.save()
+  
+  res.json({success: true, data: token})
 });
 
 router.get('/:id', async function(req, res, next) {
