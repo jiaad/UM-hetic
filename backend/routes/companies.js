@@ -8,5 +8,7 @@ router.post('/login', companyCntrl.login);
 router.get('/logout/:id', companyCntrl.logout);
 router.put('/:id', companyCntrl.update);
 router.delete('/:id', companyCntrl.delete);
+router.post('/forget_password', companyCntrl.forget_password);
+router.post('/reset_password/:token', companyCntrl.reset_password);
 
 module.exports = router;
