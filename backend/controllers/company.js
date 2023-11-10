@@ -1,6 +1,9 @@
 var bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const Company = require('../models/company');
+const crypto = require('crypto');
+const Token = require('../models/token');
+const { error } = require('console');
 
 const validateEmail = function(email) {
   const regex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
@@ -135,3 +138,50 @@ exports.delete = (req, res, next) => {
         })
     }
 }
+
+exports.forget_password = async function(req, res, next) {
+    // const errors = validationResult(req);
+    const { email } = req.body;
+  
+    const company = await Company.findOne({ email }) 
+      if (!company) {
+        return res.status(400).json({
+          success : false,
+          msg: "Aucune compagnie avec cet E-mail n'a été trouvé dans la BDD",
+        });
+      }
+  
+      const token = crypto.randomBytes(64).toString('hex'); 
+      const original_token = await Token.create({token, company})
+      const url = `http://localhost:3000/company/reset_password/${original_token}`;
+      const data = {
+        from: "me@samples.mailgun.org",
+        to: email,
+        subject: "Réinitialisation de mot de passe",
+        html: ` <p>Bonjour, nous avoins reçu une demande de réinitialisation de mot de passe de votre part. </p>
+          <h3> <a href="${url}">Cliquez ici</a></h3>
+          `,
+      };
+      res.json({success:true,token, data})
+  };
+  
+
+exports.reset_password = (req, res, next) => {
+    const { password } = req.body
+    if(!password){
+      return res.json({success: false, msg: `Remplir tout les champs`})
+    }
+    bcrypt.hash(password,10).then(hash => {
+    Token.findOne ({token : req.params.token}).then(token=>{
+        Company.findById (token.company._id).then(company=>{
+            company.password = hash
+        company.save().then(
+            () => {
+                token.deleteOne().then(()=>res.json({ success:true,
+                    message: 'Mot de passe changé!'})).catch(error => res.json({success:false,error, message:'Suppression token échoué'}));
+                
+            }).catch(error => res.json({success:false,error, message:'Enregistrement échoué'}))
+        }).catch(error=>res.json({ success:false,error ,message:'Compagnie innexistante'}))
+    }).catch(error=>res.json({ success:false,error ,message:'Token invalid'}))
+      }).catch(error => res.json({ success:false,error ,message:"bcrypt en panne, Error:500"}));
+  };
