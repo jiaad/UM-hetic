@@ -68,9 +68,8 @@ router.post('/forget_password', async function(req, res, next) {
       from: "me@samples.mailgun.org",
       to: email,
       subject: "Réinitialisation de mot de passe",
-      html: ` <p>Bonjour, nous avoins reçu une demande de réinitialisation de mot de passe de votre part. </p>
-        <h3> <a href="http://fglindayi-um-hetic-code-redirect-3.apps.sandbox-m3.1530.p1.openshiftapps.com/users/resetpassword/${original_token._id}">Cliquez ici</a></h3>
-        ${url}
+      html: ` <p>Bonjour, nous avions reçu une demande de réinitialisation de mot de passe de votre part. </p>
+        <h3> <a href="${url}">Cliquez ici</a></h3>
         `,
     };
     res.json({success:true,token, data})
