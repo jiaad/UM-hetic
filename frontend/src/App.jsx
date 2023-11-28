@@ -1,6 +1,6 @@
 import { Routes, Route } from "react-router-dom"
 import Register from "./Components/company/register.jsx"
-import UserRegister from "./Components/company/register.jsx"
+import UserRegister from "./Components/user/register.jsx"
 import "./App.css"
 import Home from "./Components/home/Home.jsx"
 import Navbar from "./Components/Navbar.jsx"
