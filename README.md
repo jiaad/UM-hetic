@@ -11,7 +11,7 @@ Pour être plus simple, on fonctionne exactement comme Google et le processus es
 # Vous êtes une compagnie
 
 ## Endpoints
-
+- ### Origin :`http://fglindayi-um-hetic-code-redirect-3.apps.sandbox-m3.1530.p1.openshiftapps.com` 
 ### 1. `company/` (POST)
 Permet à une compagnie de s'inscrire ou de créer un compte.
 
