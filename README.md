@@ -140,7 +140,7 @@ module.exports = {DB_URI}
 Pour permettre la facilté de l'usage du projet, on le fait tourner sur un serveur en ligne dont le lien source du backend est `http://fglindayi-um-hetic-code-redirect-3.apps.sandbox-m3.1530.p1.openshiftapps.com`. [Si ce lien ne marche pas, veuillez nous contacter par Discord pour qu'on le relance car parfois il le faut 🥲.]
 
 
-# Vous etes utilisateur
+# Vous êtes utilisateur
 
 ## Actions :
 En tant qu'utilisateur, vous n'avez d'actions que sur interface gratuite, en soit l'API est disponible mais que pour répondre aux exigences des compagnies. Vous pouvez bien-sûr accéder à votre profil sur `https://inquisitive-ganache-18e865.netlify.app/`.
