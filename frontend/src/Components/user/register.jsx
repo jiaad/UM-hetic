@@ -16,7 +16,7 @@ export default function Register() {
 		e.preventDefault()
 
 		try {
-			const response = await fetch("http://localhost:3001/user", {
+			const response = await fetch("http://localhost:3001/users", {
 				method: "POST",
 				headers: {
 					"Content-type": "application/json",
