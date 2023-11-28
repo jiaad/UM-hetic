@@ -26,6 +26,7 @@ Permet à une compagnie de s'inscrire ou de créer un compte.
 #### Réponse JSON
 - `{success:true, message:'Compagnie créée'}` : Compagnie inscrit avec succès.
 - `{success:false,error:'...un message d'erreur...', message:'... le message de l'erreur produite...'}` : Erreur dans les paramètres de la requête.
+
 **NB**: Vous aurrez toujours en réponse un parametre success qui vous servira de variable clée pour implémenter la logique suite à l'appel de l'API.
 
 ### 2. `company/login` (POST)
@@ -108,37 +109,58 @@ Le json reçu sera de deux types:
 Chaque requête aux endpoints protégés devrait inclure le token d'authentification dans l'en-tête `Authorization`, mais pour le moment, nous ne protégeons encore rien  pour que le projet soit ouvert à tous et pour que vous puissiez évoluer avant les restrictions.
 
 ## Autres informations
-Pensez à un npm install avant de démmarrer le projet, le fichier `package-lock.json` est dans le `.gitignore` pour réduire les problèmes de conflits dû aux différents sytemes d'exploitation. Il est d'ailleurs inévitable aussi pour les nodes_moduls ⚠️.
+Pensez à un npm install avant de démmarrer le projet si vous le téléchargez en local, le fichier `package-lock.json` est dans le `.gitignore` pour réduire les problèmes de conflits dû aux différents sytemes d'exploitation. Il est d'ailleurs inévitable aussi pour les nodes_moduls ⚠️.
 
 ```bash
 npm install
 
 ```
-Par défaut aussi, le back tournera sur le `port 3000`, s'il est occupé 😅, vous allez devoir débuguer un peu 💀, surtout pour la modification de mot de passe car le lien de modif a quasi été out-codé prenant en compte bien sur le port 3000.
-Avant la cloture du projet, on pensera à tout ça. Vous n'aure pas de problèmes dans la version finale, ceci est juste pour vous aider à implémenter vos bonnes logiques.
+Par défaut aussi, le back tournera sur le `port 3000`, s'il est occupé 😅, vous allez devoir débuguer un peu 💀, surtout pour la modification de mot de passe car le lien de modif a quasi été out-codé prenant en compte le lien en ligne cette fois ci; mais celà serait un équivalent de `http://localhost:3000/` en local soit les codes.
+
+```
+# /backend/controller/company.js ligne 156
+      const url = `http://localhost:3000/company/reset_password/${original_token}`;
+```
+
+```
+# /backend/routes/users.js ligne 65
+      const url = `http://localhost:3000/company/reset_password/${original_token._id}`;
+```
+
+
+Un fichier `config.json` est requis à la racine du dossier `backend` et dont le contenu est sous la forme suivante et donc comportant vos informations de connexion à votre base de données MongoDB :
+
+```
+const DB_URI = "mongodb+srv://identifiant:mot_de_passe@cluster0.lxcmgb6.mongodb.net/um-hetic?retryWrites=true&w=majority"
+
+module.exports = {DB_URI}
+```
+
+
+Pour permettre la facilté de l'usage du projet, on le fait tourner sur un serveur en ligne dont le lien source du backend est `http://fglindayi-um-hetic-code-redirect-3.apps.sandbox-m3.1530.p1.openshiftapps.com`. [Si ce lien ne marche pas, veuillez nous contacter par Discord pour qu'on le relance car parfois il le faut 🥲.]
+
 
 # Vous etes utilisateur
 
-## Contexte :
+## Actions :
 En tant qu'utilisateur, vous n'avez d'actions que sur interface gratuite, en soit l'API est disponible mais que pour répondre aux exigences des compagnies. Vous pouvez bien-sûr accéder à votre profil sur `https://inquisitive-ganache-18e865.netlify.app/`.
 
-### Actions
-
-#### Enregistrement 
+### Enregistrement 
 Votre enregistrement sur notre plateforme se fera via un lien `https://inquisitive-ganache-18e865.netlify.app/user/`
 
-#### Connexion 
+### Connexion 
 Votre enregistrement sur notre plateforme se fait via le lien `https://inquisitive-ganache-18e865.netlify.app/user/login`
 A la connexion, vous aurez accès à la gestion de votre profil dont **la modification** et **suppression** du compte.
 
-#### Modification des infos de compte
+### Modification des infos de compte
 Une fois connecté, vous aurez accès à la modification de vos infos de base.
 
-#### Suppression
+### Suppression
 Une fois connecté, vous aurez accès à la suppression de votre compte.
-**NB**: rappelons qu'il s'agit d'une action qui sera disponible que sur notre interface. celà est dit, votre potentielle suppression de compte chez une compagnie n'entrainera pas la suppression définif de votre compte chez nous.
 
-#### Modification de mot de Passe
+**NB** : rappelons qu'il s'agit d'une action qui sera disponible que sur notre interface. celà est dit, votre potentielle suppression de compte chez une compagnie n'entrainera pas la suppression définif de votre compte chez nous.
+
+### Modification de mot de Passe
 Cette action est un peu particulière car elle se déroule en deux parties :
-    - Génération d'un token d'Update à Usage unique qui vous permettra de modifier votre mot de passe via un lien (unique)
-    - Modification du mot de passe via le lien reçu.
+- Génération d'un token d'Update à Usage unique qui vous permettra de modifier votre mot de passe via un lien (unique)
+- Modification du mot de passe via le lien reçu.
