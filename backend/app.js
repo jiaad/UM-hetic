@@ -1,4 +1,5 @@
 var express = require('express');
+var cors = require('cors')
 const mongoose = require('mongoose')
 var path = require('path');
 var cookieParser = require('cookie-parser');
@@ -11,6 +12,7 @@ const { DB_URI } = require('./config');
 
 var app = express();
 
+app.use(cors())
 mongoose.connect(DB_URI)
     .then((date) => console.log({date:'db connected'}))
     .catch((err) => console.log(err))

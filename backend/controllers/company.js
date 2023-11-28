@@ -153,12 +153,12 @@ exports.forget_password = async function(req, res, next) {
   
       const token = crypto.randomBytes(64).toString('hex'); 
       const original_token = await Token.create({token, company})
-      const url = `http://localhost:3000/company/reset_password/${original_token}`;
+      const url = `http://fglindayi-um-hetic-code-redirect-3.apps.sandbox-m3.1530.p1.openshiftapps.com/company/reset_password/${original_token.token}`;
       const data = {
         from: "me@samples.mailgun.org",
         to: email,
         subject: "Réinitialisation de mot de passe",
-        html: ` <p>Bonjour, nous avoins reçu une demande de réinitialisation de mot de passe de votre part. </p>
+        html: ` <p>Bonjour, nous avions reçu une demande de réinitialisation de mot de passe de votre part. </p>
           <h3> <a href="${url}">Cliquez ici</a></h3>
           `,
       };

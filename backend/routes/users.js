@@ -16,7 +16,7 @@ router.post('/login', async function(req, res, next) {
   const { email, password } = req.body
 
   if(email == undefined || password == undefined) {
-    return res.json({ err:true, msg: `renseigner tout les champs`})
+    return res.json({ success:false, msg: `renseigner tout les champs`})
 }
 
   const user = await User.findOne({email})
@@ -36,7 +36,7 @@ router.post('/create_account', async function(req, res, next) {
   const {firstname, lastname , email, password, birth_date, gender, number, adresse } = req.body
 
   if (email == undefined || password == undefined || firstname == undefined || lastname == undefined)
-  return res.json({ err:true , msg: `renseigner tout les champs`})
+  return res.json({ success:false , msg: `renseigner tout les champs`})
   const doesExist = await User.findOne({email})
   if(doesExist)
   return res.json({success: false, msg: `${email} existe déja`})
@@ -62,14 +62,14 @@ router.post('/forget_password', async function(req, res, next) {
     const token = crypto.randomBytes(64).toString('hex'); 
     const original_token = await Token.create({token, user})
     var currentDate = new Date();
-    const url = `http://localhost:3000/resetpassword/${original_token._id}`;
+    const url = `http://fglindayi-um-hetic-code-redirect-3.apps.sandbox-m3.1530.p1.openshiftapps.com/users/resetpassword/${original_token._id}`;
     console.log({ url });
     const data = {
       from: "me@samples.mailgun.org",
       to: email,
       subject: "Réinitialisation de mot de passe",
       html: ` <p>Bonjour, nous avoins reçu une demande de réinitialisation de mot de passe de votre part. </p>
-        <h3> <a href="http://localhost:3000/resetpassword/${original_token._id}">Cliquez ici</a></h3>
+        <h3> <a href="http://fglindayi-um-hetic-code-redirect-3.apps.sandbox-m3.1530.p1.openshiftapps.com/users/resetpassword/${original_token._id}">Cliquez ici</a></h3>
         ${url}
         `,
     };
