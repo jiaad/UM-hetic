@@ -78,7 +78,7 @@ export default function Register() {
 						Mot De Passe
 					</label>
 					<input
-						type="text"
+						type="password"
 						id="password"
 						name="password"
 						value={password}
