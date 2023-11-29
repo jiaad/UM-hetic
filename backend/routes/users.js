@@ -1,38 +1,66 @@
 var express = require('express');
 var bcrypt = require('bcryptjs');
 var router = express.Router();
+const asyncHandler = require('express-async-handler');
 const crypto = require("crypto");
 const algorithm = "aes-256-cbc"; 
 const User = require('../models/user');
+const Company = require('../models/company');
 const Token = require('../models/token');
 
 
 /* GET users listing. */
-router.get('/', function(req, res, next) {
+router.get('/', asyncHandler(function(req, res, next) {
   res.send('respond with a resource');
-});
+}));
 
-router.post('/login', async function(req, res, next) {
-  const { email, password } = req.body
+router.post('/login/:id_company?', asyncHandler(async function(req, res, next) {
+  if (req.params.id_company == null) {
+    const { email, password } = req.body
 
-  if(email == undefined || password == undefined) {
-    return res.json({ success:false, msg: `renseigner tout les champs`})
-}
-
-  const user = await User.findOne({email})
-  if(user == undefined) {
-    return res.json({success: false, msg: `${email} n'existe pas`}) 
+    if(email == undefined || password == undefined) {
+      return res.json({ success:false, msg: `renseigner tout les champs`})
   }
   
-  const check_password = await compareAsync(password, user.password)
-  if(check_password == true) {
-    return res.json({success: true, data: user})
-  } 
+    const user = await User.findOne({email})
+    if(user == undefined) {
+      return res.json({success: false, msg: `${email} n'existe pas`}) 
+    }
+    
+    const check_password = await compareAsync(password, user.password)
+    if(check_password == true) {
+      return res.json({success: true, data: user})
+    } 
+  
+    return res.json({success: false, msg: `erreur indentfiant ou mot de passe invalide`})
+  } else {
 
-  return res.json({success: false, msg: `erreur indentfiant ou mot de passe invalide`})
-});
+    let company = await Company.findById (req.params.id_company);
+    if (!company) {
+      res.json({ success:false,error ,message:'Compagnie innexistante'})
+    }
+    const { email, password } = req.body
 
-router.post('/create_account', async function(req, res, next) {
+    if(email == undefined || password == undefined) {
+      return res.json({ success:false, msg: `renseigner tout les champs`})
+  }
+  
+    const user = await User.findOne({email})
+    if(user == undefined) {
+      return res.json({success: false, msg: `${email} n'existe pas`}) 
+    }
+    
+    const check_password = await compareAsync(password, user.password)
+    if(check_password == true) {
+      return res.json({success: true, data: user})
+    } 
+  
+    return res.json({success: false, msg: `erreur indentfiant ou mot de passe invalide`})
+  }
+  
+}));
+
+router.post('/create_account', asyncHandler(async function(req, res, next) {
   const {firstname, lastname , email, password, birth_date, gender, number, adresse } = req.body
 
   if (email == undefined || password == undefined || firstname == undefined || lastname == undefined)
@@ -45,9 +73,9 @@ router.post('/create_account', async function(req, res, next) {
 
   const user = await User.create({...req.body, password: hash_password})
   return res.json({ success: true, data: user})
-});
+}));
 
-router.post('/forget_password', async function(req, res, next) {
+router.post('/forget_password', asyncHandler(async function(req, res, next) {
   // const errors = validationResult(req);
   const { email } = req.body;
 
@@ -73,9 +101,9 @@ router.post('/forget_password', async function(req, res, next) {
         `,
     };
     res.json({success:true,token, data})
-});
+}));
 
-router.post('/reset_password/:token',async function(req, res, next) {
+router.post('/reset_password/:token',asyncHandler(async function(req, res, next) {
   const { password } = req.body
   if(!password){
     return res.json({success: false, msg: `Remplir tout les champs`})
@@ -91,11 +119,11 @@ router.post('/reset_password/:token',async function(req, res, next) {
   await user.save()
   
   res.json({success: true, data: token})
-});
+}));
 
-router.get('/:id', async function(req, res, next) {
+router.get('/:id', asyncHandler(async function(req, res, next) {
   return res.json({success: true, msg: ` existe déja`, params: req.params})
-});
+}));
 module.exports = router;
 
 const hashPassword = async (password, saltRounds) => {
