@@ -106,6 +106,7 @@ export function Login() {
 
 function Company({ company }) {
   console.log(company);
+  let url = `http://fglindayi-um-hetic-code-redirect-3.apps.sandbox-m3.1530.p1.openshiftapps.com/users/login/${company?.id}`;
   return (
     <section className="grid place-content-center h-[80vh] border rounded">
       <article className="flex gap-4">
@@ -119,6 +120,11 @@ function Company({ company }) {
       <article className="flex gap-4">
         <p>Type d'application:</p>
         <p>{company?.type}</p>
+      </article>
+      <article className="flex gap-4">
+        {
+        <p>Trouver <a href={url} className=" bg-blue-500 text-white">ici</a> le lien à utiliser pour la connexion de vos utilisateurs (le type de requete est POST)</p>
+        }
       </article>
     </section>
   );
